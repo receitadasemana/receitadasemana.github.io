@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Receita da Semana</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Layout: mobile-first recipe card, opened from a shelf QR code. Hero, then price strip, ingredients, steps. */
+  --green: #7CC242;
+  --green-deep: #3F6B22;
+  --green-wash: #EEF6E4;
+  --ink: #23301C;
+  --muted: #5F6B58;
+  --paper: #FBFCF8;
+  --sun: #F6C343;
+  --font-display: "Poppins", "Segoe UI", system-ui, sans-serif;
+  --font-body: "DM Sans", "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.5;
+}
+.concept {
+  background: var(--ink);
+  color: #E9EFE3;
+  font-size: 13px;
+  padding: 8px 16px;
+  text-align: center;
+}
+.concept strong { color: var(--sun); font-weight: 700; }
+.wrap { max-width: 760px; margin: 0 auto; padding: 0 18px; }
+
+header.hero {
+  background: var(--green);
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+.hero .wrap { padding-top: 26px; padding-bottom: 40px; position: relative; z-index: 1; }
+.hero .top { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
+.brand {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(42px, 10.5vw, 66px);
+  letter-spacing: -.035em;
+  line-height: .95;
+  margin: 0;
+}
+.hero .grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 300px); gap: 26px; align-items: center; margin-top: 22px; }
+.photo { margin: 0; }
+.photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 24px;
+  border: 5px solid #fff;
+  box-shadow: 0 14px 34px rgba(35,48,28,.28);
+  background: var(--green-deep);
+}
+@media (max-width: 620px) {
+  .hero .grid { grid-template-columns: minmax(0, 1fr); }
+  .photo img { aspect-ratio: 4 / 3; }
+}
+.week { font-size: 14px; opacity: .95; }
+.hero h1 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(26px, 5vw, 36px);
+  line-height: 1.05;
+  letter-spacing: -.02em;
+  margin: 0 0 10px;
+  text-wrap: balance;
+}
+.hero p.lede { margin: 0; font-size: 18px; max-width: 34ch; }
+.meta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+.meta span {
+  background: rgba(255,255,255,.18);
+  border: 1px solid rgba(255,255,255,.35);
+  border-radius: 12px;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.price {
+  margin-top: -18px;
+  position: relative;
+  z-index: 2;
+}
+.price .card {
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(35,48,28,.12);
+  padding: 18px 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 14px;
+  align-items: center;
+}
+.price .label { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; font-weight: 700; }
+.price .val { font-family: var(--font-display); font-weight: 800; font-size: 30px; line-height: 1.1; font-variant-numeric: tabular-nums; color: var(--green-deep); }
+.price .val small { font-size: 15px; font-weight: 600; color: var(--muted); }
+.servings { display: flex; align-items: center; gap: 6px; background: var(--green-wash); border-radius: 999px; padding: 4px; }
+.servings button {
+  font: inherit;
+  font-family: var(--font-display);
+  font-weight: 700;
+  border: 0;
+  background: transparent;
+  color: var(--green-deep);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 15px;
+}
+.servings button[aria-pressed="true"] { background: var(--green); color: #fff; }
+.servings button:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+@media (max-width: 560px) {
+  .price .card { grid-template-columns: 1fr 1fr; }
+  .servings { grid-column: 1 / -1; justify-content: center; }
+  .price .val { font-size: 25px; white-space: nowrap; }
+}
+.fine { font-size: 12.5px; color: var(--muted); margin: 8px 4px 0; }
+
+section { margin-top: 34px; }
+h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 24px;
+  margin: 0 0 6px;
+  letter-spacing: -.01em;
+}
+.sub { color: var(--muted); margin: 0 0 16px; }
+
+.where {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  background: var(--green-wash);
+  border-radius: 16px;
+  padding: 14px 16px;
+}
+.where svg { flex: 0 0 auto; }
+.where p { margin: 0; }
+.where strong { color: var(--green-deep); }
+
+ul.items { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+.item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 14px;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #E3EAD9;
+  border-radius: 16px;
+  padding: 12px 14px;
+}
+.item .name { font-weight: 700; display: block; }
+.item .qty { color: var(--muted); font-size: 15px; font-variant-numeric: tabular-nums; }
+.item .cost { font-family: var(--font-display); font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
+.item .unit { display: block; font-family: var(--font-body); font-weight: 400; font-size: 13px; color: var(--muted); }
+.tags { display: inline-flex; gap: 6px; flex-wrap: wrap; margin-left: 6px; vertical-align: middle; }
+.tag { font-size: 11.5px; font-weight: 700; border-radius: 999px; padding: 2px 8px; white-space: nowrap; }
+.tag.own { background: var(--green-wash); color: var(--green-deep); }
+.pantry { margin-top: 12px; font-size: 15px; color: var(--muted); }
+
+.actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+.btn {
+  font: inherit;
+  font-weight: 700;
+  border-radius: 12px;
+  padding: 11px 16px;
+  border: 2px solid var(--green-deep);
+  background: var(--green-deep);
+  color: #fff;
+  cursor: pointer;
+}
+.btn.ghost { background: transparent; color: var(--green-deep); }
+.btn:focus-visible { outline: 3px solid var(--sun); outline-offset: 2px; }
+.status { font-size: 14px; color: var(--green-deep); align-self: center; min-height: 1em; }
+
+ol.steps { list-style: none; counter-reset: s; padding: 0; margin: 0; display: grid; gap: 12px; }
+ol.steps li {
+  counter-increment: s;
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 14px;
+  align-items: start;
+}
+ol.steps li::before {
+  content: counter(s);
+  font-family: var(--font-display);
+  font-weight: 700;
+  background: var(--green);
+  color: #fff;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}
+ol.steps p { margin: 7px 0 0; }
+ol.steps .t { font-weight: 700; }
+
+footer { margin: 44px 0 0; padding: 26px 0 40px; background: var(--ink); color: #DDE6D5; font-size: 14px; }
+footer p { margin: 0 0 6px; }
+footer strong { color: #fff; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="concept"><strong>Protótipo</strong> · Conceito de André Moreira para o desafio do Programa de Trainees Jerónimo Martins 2027. Não é uma página oficial. Preços consultados na loja online Pingo Doce, podem variar.</div>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="top">
+      <p class="brand">Receita da semana</p>
+      <span class="week">Semana de 16 a 22 de novembro</span>
+    </div>
+    <div class="grid">
+      <div>
+        <h1>Penne cremoso com frango, cogumelos e espinafres</h1>
+        <p class="lede">Um jantar de semana com tudo o que precisa no mesmo expositor da loja.</p>
+        <div class="meta">
+          <span>25 minutos</span>
+          <span>Fácil</span>
+          <span>1 tacho e 1 frigideira</span>
+        </div>
+      </div>
+      <figure class="photo">
+        <img src="https://images.pexels.com/photos/3214160/pexels-photo-3214160.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=900&amp;h=900&amp;fit=crop" alt="Prato de penne com molho cremoso e cogumelos" width="900" height="900">
+      </figure>
+    </div>
+  </div>
+</header>
+
+<div class="price">
+  <div class="wrap">
+    <div class="card" aria-live="polite">
+      <div>
+        <div class="label">Total a pagar</div>
+        <div class="val" id="total">10,25 €</div>
+      </div>
+      <div>
+        <div class="label">Por pessoa</div>
+        <div class="val" id="per">2,56 € <small>/ pessoa</small></div>
+      </div>
+      <div class="servings" role="group" aria-label="Número de pessoas">
+        <button type="button" data-n="2" aria-pressed="false" aria-label="2 pessoas">2</button>
+        <button type="button" data-n="4" aria-pressed="true" aria-label="4 pessoas">4</button>
+        <button type="button" data-n="6" aria-pressed="false" aria-label="6 pessoas">6</button>
+      </div>
+    </div>
+    <p class="fine">Escolha o número de pessoas: as quantidades e o preço ajustam-se. Por pessoa = total a pagar a dividir pelo número de pessoas.</p>
+  </div>
+</div>
+
+<main class="wrap">
+
+  <section>
+    <div class="where">
+      <svg width="44" height="44" viewBox="0 0 44 44" aria-hidden="true"><rect x="2" y="6" width="40" height="32" rx="8" fill="#7CC242"/><rect x="8" y="13" width="28" height="4" rx="2" fill="#fff"/><rect x="8" y="21" width="28" height="4" rx="2" fill="#fff"/><rect x="8" y="29" width="28" height="4" rx="2" fill="#fff"/></svg>
+      <p><strong>Está tudo no expositor "Receita da semana"</strong>, ao lado da fruta e do Pronto a Levar. A carne fica na secção de frescos e os espinafres nos congelados, sinalizados com o mesmo autocolante verde.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ingredientes</h2>
+    <p class="sub">Escolhemos a opção mais em conta de cada produto.</p>
+    <ul class="items" id="items"></ul>
+    <p class="pantry">Da despensa: 2 dentes de alho, azeite, sal e pimenta.</p>
+    <div class="actions">
+      <button type="button" class="btn" id="copy">Copiar lista de compras</button>
+      <span class="status" id="status" role="status"></span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Como fazer</h2>
+    <p class="sub">Para 4 pessoas. Com 2 ou 6, os tempos mantêm-se.</p>
+    <ol class="steps">
+      <li><div><p><span class="t">Coza a massa.</span> Num tacho com água a ferver e sal, coza o penne o tempo indicado na embalagem. Antes de escorrer, guarde uma chávena da água da cozedura.</p></div></li>
+      <li><div><p><span class="t">Doure o frango.</span> Enquanto a massa coze, corte o peito de frango em cubos, tempere com sal e pimenta e doure numa frigideira grande com um fio de azeite, 6 a 7 minutos, até estar cozinhado por dentro. Retire e reserve.</p></div></li>
+      <li><div><p><span class="t">Salteie os cogumelos.</span> Na mesma frigideira, salteie os cogumelos 5 a 6 minutos, até largarem a água e ganharem cor. Junte o alho picado no último minuto, para não queimar.</p></div></li>
+      <li><div><p><span class="t">Faça o molho.</span> Junte as natas e os espinafres congelados (não é preciso descongelar) e deixe cozinhar em lume brando 4 a 5 minutos, mexendo, até os espinafres se soltarem. Volte a pôr o frango na frigideira e acerte o sal e a pimenta.</p></div></li>
+      <li><div><p><span class="t">Envolva e sirva.</span> Junte a massa escorrida e metade do queijo ralado. Se o molho estiver espesso, acrescente um pouco da água da cozedura. Sirva com o resto do queijo por cima.</p></div></li>
+    </ol>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><strong>Receita da semana</strong> · Silveira, Torres Vedras</p>
+    <p>Protótipo criado para uma apresentação. Preços da loja online Pingo Doce, podem variar na loja. Foto: Engin Akyurt / Pexels.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  // Quantities for 4 people. Prices per pack from the Pingo Doce online shop.
+  var items = [
+    { id: "massa",  name: "Massa Penne",               q: 500, u: "g",  pack: 500, packLabel: "500 g",    price: 1.09 , own: true },
+    { id: "frango", name: "Peito de Frango Nosso Talho", q: 500, u: "g", pack: 500, packLabel: "≈ 500 g · 6,49 €/kg", price: 3.25 },
+    { id: "cogu",   name: "Cogumelos Brancos Laminados", q: 250, u: "g", pack: 250, packLabel: "250 g",   price: 1.55 , own: true },
+    { id: "espin",  name: "Espinafres em Folha Congelados", q: 200, u: "g", pack: 400, packLabel: "400 g", price: 0.75 , own: true },
+    { id: "natas",  name: "Natas UHT para Culinária",  q: 400, u: "ml", pack: 200, packLabel: "200 ml",   price: 0.79 , own: true },
+    { id: "queijo", name: "Queijo Flamengo Ralado",    q: 80,  u: "g",  pack: 200, packLabel: "200 g",    price: 1.49 , own: true }
+  ];
+  var n = 4;
+
+  function euro(v) { return v.toFixed(2).replace(".", ",") + " €"; }
+  function need(it) { return it.q * n / 4; }
+  function packs(it) { return Math.max(1, Math.ceil(need(it) / it.pack - 1e-9)); }
+  function fmtQty(it) {
+    var v = need(it);
+    if (it.u === "g" && v >= 1000) return (v / 1000).toString().replace(".", ",") + " kg";
+    return Math.round(v) + " " + it.u;
+  }
+  function packTxt(it) { var p = packs(it); return p + (p === 1 ? " embalagem" : " embalagens"); }
+
+  var list = document.getElementById("items");
+  function render() {
+    var total = 0;
+    list.innerHTML = "";
+    items.forEach(function (it) {
+      var cost = packs(it) * it.price;
+      total += cost;
+      var li = document.createElement("li");
+      li.className = "item";
+      li.innerHTML =
+        '<div><span class="name">' + it.name +
+        (it.own ? '<span class="tags"><span class="tag own">⭐ Marca Pingo Doce</span></span>' : "") + "</span>" +
+        '<span class="qty">Usa ' + fmtQty(it) + " · leva " + packTxt(it) + " (" + it.packLabel + ")</span></div>" +
+        '<span class="cost">' + euro(cost) + '<span class="unit">' + euro(it.price) + " / emb.</span></span>";
+      list.appendChild(li);
+    });
+    document.getElementById("total").textContent = euro(total);
+    document.getElementById("per").innerHTML = euro(total / n) + " <small>/ pessoa</small>";
+  }
+
+  document.querySelectorAll(".servings button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      n = parseInt(b.getAttribute("data-n"), 10);
+      document.querySelectorAll(".servings button").forEach(function (x) {
+        x.setAttribute("aria-pressed", x === b ? "true" : "false");
+      });
+      render();
+    });
+  });
+
+  var status = document.getElementById("status");
+  document.getElementById("copy").addEventListener("click", function () {
+    var text = "Receita da semana (" + n + " pessoas)\n" + items.map(function (it) {
+      return "- " + it.name + (it.own ? " Pingo Doce" : "") + ": " + packTxt(it) + " (" + it.packLabel + ")";
+    }).join("\n") + "\nDa despensa: alho, azeite, sal e pimenta";
+    try {
+      navigator.clipboard.writeText(text).then(function () {
+        status.textContent = "Lista copiada.";
+      }, function () { status.textContent = "Não foi possível copiar neste navegador."; });
+    } catch (e) { status.textContent = "Não foi possível copiar neste navegador."; }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
